@@ -1,13 +1,13 @@
 import { injectable, inject } from 'tsyringe';
 
 import AppError from '@shared/errors/AppError';
-
 import ICacheProvider from '@shared/container/providers/CacheProvider/models/ICacheProvider';
-import User from '../infra/typeorm/entities/User';
-import IUserRepository from '../repositories/IUsersRepository';
+import IUsersRepository from '../repositories/IUsersRepository';
 import IHashProvider from '../providers/HashProvider/models/IHashProvider';
 
-interface IRequestDTO {
+import User from '../infra/typeorm/entities/User';
+
+interface IRequest {
   name: string;
   email: string;
   password: string;
@@ -17,7 +17,7 @@ interface IRequestDTO {
 class CreateUserService {
   constructor(
     @inject('UsersRepository')
-    private usersRepository: IUserRepository,
+    private usersRepository: IUsersRepository,
 
     @inject('HashProvider')
     private hashProvider: IHashProvider,
@@ -26,7 +26,7 @@ class CreateUserService {
     private cacheProvider: ICacheProvider,
   ) {}
 
-  public async execute({ name, email, password }: IRequestDTO): Promise<User> {
+  public async execute({ name, email, password }: IRequest): Promise<User> {
     const checkUserExists = await this.usersRepository.findByEmail(email);
 
     if (checkUserExists) {
